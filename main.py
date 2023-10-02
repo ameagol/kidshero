@@ -2,7 +2,6 @@ from ultralytics import YOLO
 import cv2
 import math
 
-
 def trigger_alert():
     cv2.putText(img, 'ALERT', (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 3)
     cv2.putText(img, classNames[cls], org, font, fontScale, (0, 0, 255), thickness)
@@ -52,11 +51,9 @@ while True:
 
             # confidence
             confidence = math.ceil((box.conf[0] * 100)) / 100
-            print("Confidence --->", confidence)
 
             # class name
             cls = int(box.cls[0])
-            print("Class name -->", classNames[cls])
 
             # object details
             org = [x1, y1]
@@ -65,8 +62,9 @@ while True:
             color = (0, 255, 0)
             thickness = 2
 
-            if classNames[cls] == "child" or classNames[cls] == "dog":
-                # Trigger the USB-C siren
+            # avoid false alerts
+            if confidence > 0.60 and classNames[cls] == "child" or classNames[cls] == "dog":
+                # Emit USB-C siren and mark as alert
                 trigger_alert()
             else:
                 cv2.putText(img, classNames[cls], org, font, fontScale, color, thickness)
